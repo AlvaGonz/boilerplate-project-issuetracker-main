@@ -9,12 +9,26 @@
     <link rel="stylesheet" href="/public/style.css">
   </head>
   <body>
-    <header>
-      <h1>
-        Issue Tracker
-      </h1>
-    </header>
-    <section style="margin: 0 50px;">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">Issue Tracker</div>
+        <nav class="nav">
+          <a class="nav-item active" href="/">Overview</a>
+          <a class="nav-item" href="/api/issues/apitest/">Project: apitest</a>
+        </nav>
+        <div class="sidebar-footer">
+          <span class="badge success">Open</span>
+          <span class="badge muted">Closed</span>
+        </div>
+      </aside>
+      <main class="content">
+        <header class="toolbar">
+          <div class="title">Overview</div>
+          <div class="actions">
+            <a class="btn ghost" href="/api/issues/apitest/">Open apitest</a>
+          </div>
+        </header>
+        <section>
       <h3>Example <code>GET</code> usage</h3>
       <code>/api/issues/{project}</code><br>
       <code>/api/issues/{project}?open=true&amp;assigned_to=Joe</code><br>
@@ -37,38 +51,40 @@
 </code>
 </pre>
     </section>
-    <hr style='margin: 0 50px'>
-    <section id='testui' style='margin-left: 50px;'>
+    <hr>
+    <section id='testui'>
       <h3>Examples</h3>
       Go to <a href='/api/issues/apitest/'><code>/api/issues/apitest/</code></a>  project
       <h2 style="text-align: left">API Tests</h2>
       <h3>Submit issue on <i>apitest</i></h3>
-      <form id="testForm" class="border">
-        <input type="text" name="issue_title" placeholder="*Title" style="width: 100px" required=''><br>
-        <textarea type="text" name="issue_text" placeholder="*Text" style="width: 100px" required=''></textarea><br>
-        <input type="text" name="created_by" placeholder="*Created by" style="width: 100px" required=''><br>
-        <input type="text" name="assigned_to" placeholder="(opt)Assigned to" style="width: 100px"><br>
-        <input type="text" name="status_text" placeholder="(opt)Status text" style="width: 100px"><br>
-        <button type="submit">Submit Issue</button>
+      <form id="testForm" class="panel">
+        <input type="text" name="issue_title" placeholder="*Title" required=''><br>
+        <textarea type="text" name="issue_text" placeholder="*Text" required=''></textarea><br>
+        <input type="text" name="created_by" placeholder="*Created by" required=''><br>
+        <input type="text" name="assigned_to" placeholder="(opt)Assigned to"><br>
+        <input type="text" name="status_text" placeholder="(opt)Status text"><br>
+        <button type="submit" class="btn">Submit Issue</button>
       </form><br>
       <h3>Update issue on <i>apitest</i> (Change any or all to update issue on the _id supplied)</h3>
-      <form id="testForm2" class="border">
-        <input type="text" name="_id" placeholder="*_id" style="width: 100px" required=''><br>
-        <input type="text" name="issue_title" placeholder="(opt)Title" style="width: 100px"><br>
-        <textarea type="text" name="issue_text" placeholder="(opt)Text" style="width: 100px"></textarea><br>
-        <input type="text" name="created_by" placeholder="(opt)Created by" style="width: 100px"><br>
-        <input type="text" name="assigned_to" placeholder="(opt)Assigned to" style="width: 100px"><br>
-        <input type="text" name="status_text" placeholder="(opt)Status text" style="width: 100px"><br>
+      <form id="testForm2" class="panel">
+        <input type="text" name="_id" placeholder="*_id" required=''><br>
+        <input type="text" name="issue_title" placeholder="(opt)Title"><br>
+        <textarea type="text" name="issue_text" placeholder="(opt)Text"></textarea><br>
+        <input type="text" name="created_by" placeholder="(opt)Created by"><br>
+        <input type="text" name="assigned_to" placeholder="(opt)Assigned to"><br>
+        <input type="text" name="status_text" placeholder="(opt)Status text"><br>
         <label><input type="checkbox" name="open" value="false"> Check to close issue</label><br>
-        <button type="submit">Submit Issue</button>
+        <button type="submit" class="btn">Submit Issue</button>
       </form><br>
       <h3>Delete issue on <i>apitest</i></h3>
-      <form id="testForm3" class="border">
-        <input type="text" name="_id" placeholder="_id" style="width: 100px" required=''><br>
-        <button type="submit">Delete Issue</button>
+      <form id="testForm3" class="panel">
+        <input type="text" name="_id" placeholder="_id" required=''><br>
+        <button type="submit" class="btn danger">Delete Issue</button>
       </form>
       <code id='jsonResult'></code>
-    </section>
+        </section>
+      </main>
+    </div>
     <hr style='margin: 50px; margin-top: 200px'>
     <!-- Your web-app is https, so your scripts need to be too -->
     <script src="https://code.jquery.com/jquery-2.2.1.min.js"

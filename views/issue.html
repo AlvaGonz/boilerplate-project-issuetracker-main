@@ -9,27 +9,46 @@
     <link rel="stylesheet" href="/public/style.css">
   </head>
   <body>
-    <header>
-      <h1 id='projectTitle'></h1>
-    </header>
-    <center>
-      <div id='submitNewIssue'>
-        <br>
-        <h3>Submit a new issue:</h3>
-        <form id="newIssue" method="post" action="/api/">
-          <input type="text" name="issue_title" placeholder="*Title" style="width: 320px; margin-bottom: 3px;" required=''><br>
-          <textarea type="text" name="issue_text" placeholder="*Text" style="width: 320px; height: 100px;" required=''></textarea><br>
-          <input type="text" name="created_by" placeholder="*Created by" style="width: 100px" required=''>
-          <input type="text" name="assigned_to" placeholder="(opt)Assigned to" style="width: 100px">
-          <input type="text" name="status_text" placeholder="(opt)Status text" style="width: 100px"><br>
-          <button type="submit">Submit Issue</button>
-        </form>
-      </div>
-      
-      <div id='issueDisplay'></div>
-      
-      <hr style='margin: 50px; margin-top: 200px'>
-    </center>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">Issue Tracker</div>
+        <nav class="nav">
+          <a class="nav-item" href="/">Overview</a>
+          <a class="nav-item active" href="#">Project</a>
+        </nav>
+      </aside>
+      <main class="content">
+        <header class="toolbar">
+          <div class="title" id='projectTitle'></div>
+          <div class="actions">
+            <a class="btn ghost" href="/">Back</a>
+          </div>
+        </header>
+        <section id='submitNewIssue'>
+          <h3>Submit a new issue</h3>
+          <form id="newIssue" class="panel" method="post" action="/api/">
+            <input type="text" name="issue_title" placeholder="*Title" required=''><br>
+            <textarea type="text" name="issue_text" placeholder="*Text" required=''></textarea><br>
+            <div class="grid-3">
+              <input type="text" name="created_by" placeholder="*Created by" required=''>
+              <input type="text" name="assigned_to" placeholder="(opt)Assigned to">
+              <input type="text" name="status_text" placeholder="(opt)Status text">
+            </div>
+            <button type="submit" class="btn">Submit Issue</button>
+          </form>
+        </section>
+        <section class="kanban">
+          <div class="column">
+            <div class="column-header">Open</div>
+            <div id='boardOpen' class="issue-grid"></div>
+          </div>
+          <div class="column">
+            <div class="column-header">Closed</div>
+            <div id='boardClosed' class="issue-grid"></div>
+          </div>
+        </section>
+      </main>
+    </div>
     
     <script src="https://code.jquery.com/jquery-2.2.1.min.js"
             integrity="sha256-gvQgAFzTH6trSrAWoH1iPo9Xc96QxSZ3feW6kem+O00="
@@ -42,30 +61,41 @@
         $.ajax({
           type: "GET",
           url: url,
-          success: function(data)
-          {
-            let issues= [];
-            data.forEach(function(ele) {
-              console.log(ele);
-              let openstatus;
-              (ele.open) ? openstatus = 'open' : openstatus = 'closed';
-              let single = [
+          success: function(data) {
+            const toCard = function(ele) {
+              const openstatus = ele.open ? 'open' : 'closed';
+              const chip = ele.open ? '<span class="chip open">Open</span>' : '<span class="chip closed">Closed</span>';
+              const userIcon = '<svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"/></svg>';
+              const calIcon = '<svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 2h2v2h6V2h2v2h3a2 2 0 0 1 2 2v3H2V6a2 2 0 0 1 2-2h3V2Zm15 9H2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2Z"/></svg>';
+              const idIcon = '<svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 4h18v16H3Zm2 2v12h14V6Zm2 2h6v2H7Zm0 4h10v2H7Z"/></svg>';
+              return [
                 '<div class="issue '+openstatus+'">',
-                '<p class="id">id: '+ele._id+'</p>',
-                '<h3>'+ele.issue_title+' -  ('+openstatus+')</h3>',
-                '<br>',
-                '<p>'+ele.issue_text+'</p>',
-                '<p>'+ele.status_text+'</p>',
-                '<br>',
-                '<p class="id"><b>Created by:</b> '+ele.created_by+'  <b>Assigned to:</b> '+ele.assigned_to,
-                '<p class="id"><b>Created on:</b> '+ele.created_on+'  <b>Last updated:</b> '+ele.updated_on,
-                '<br><a href="#" class="closeIssue" id="'+ele._id+'">close?</a> <a href="#" class="deleteIssue" id="'+ele._id+'">delete?</a>',
+                  '<div class="issue-head">',
+                    '<span class="id">'+idIcon+' '+ele._id+'</span>',
+                    chip,
+                  '</div>',
+                  '<h3>'+ele.issue_title+'</h3>',
+                  '<p>'+ele.issue_text+'</p>',
+                  (ele.status_text ? '<span class="badge">'+ele.status_text+'</span>' : ''),
+                  '<div class="meta">',
+                    '<span>'+userIcon+' '+ele.created_by+'</span>',
+                    (ele.assigned_to ? '<span>'+userIcon+' '+ele.assigned_to+'</span>' : ''),
+                    '<span>'+calIcon+' '+ele.created_on+'</span>',
+                  '</div>',
+                  '<div class="actions-row">',
+                    (ele.open ? '<a href="#" class="btn ghost closeIssue" id="'+ele._id+'">Close</a>' : ''),
+                    '<a href="#" class="btn danger deleteIssue" id="'+ele._id+'">Delete</a>',
+                  '</div>',
                 '</div>'
-                
-              ];
-              issues.push(single.join(''));
+              ].join('');
+            };
+            const openItems = [];
+            const closedItems = [];
+            data.forEach(function(ele) {
+              (ele.open ? openItems : closedItems).push(toCard(ele));
             });
-            $('#issueDisplay').html(issues.join(''));
+            $('#boardOpen').html(openItems.join(''));
+            $('#boardClosed').html(closedItems.join(''));
           }
         });
         
@@ -80,25 +110,25 @@
           });
         });
         
-        $('#issueDisplay').on('click','.closeIssue', function(e) {
+        $(document).on('click','.closeIssue', function(e) {
+          e.preventDefault();
           let url = "/api/issues/"+currentProject;
           $.ajax({
             type: "PUT",
             url: url,
             data: {_id: $(this).attr('id'), open: false},
-            success: function(data) { alert(data); window.location.reload(true); }
+            success: function(data) { alert(JSON.stringify(data)); window.location.reload(true); }
           });
-          e.preventDefault();
         });
-        $('#issueDisplay').on('click','.deleteIssue', function(e) {
+        $(document).on('click','.deleteIssue', function(e) {
+          e.preventDefault();
           let url = "/api/issues/"+currentProject;
           $.ajax({
             type: "DELETE",
             url: url,
             data: {_id: $(this).attr('id')},
-            success: function(data) { alert(data); window.location.reload(true); }
+            success: function(data) { alert(JSON.stringify(data)); window.location.reload(true); }
           });
-          e.preventDefault();
         });
       });
    </script>
